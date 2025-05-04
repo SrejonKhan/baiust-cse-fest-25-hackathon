@@ -1,0 +1,405 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "CSE Fest 2025 API",
+    "description": "API endpoints for CSE Fest 2025 Hackathon",
+    "version": "1.0.0",
+    "contact": {
+      "name": "CSE Fest Team",
+      "url": "https://csefest.srejon.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://csefest.srejon.com/api/v1",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/marathon": {
+      "get": {
+        "summary": "Get nearby marathons",
+        "description": "Returns a list of marathons near the specified location",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "example": 23.8103
+            },
+            "description": "Latitude of the user's location"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "example": 90.4125
+            },
+            "description": "Longitude of the user's location"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Marathon"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Latitude and longitude are required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gyms": {
+      "get": {
+        "summary": "Get nearby gyms",
+        "description": "Returns a list of gyms near the specified location",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "example": 23.8103
+            },
+            "description": "Latitude of the user's location"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "example": 90.4125
+            },
+            "description": "Longitude of the user's location"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Gym"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Latitude and longitude are required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gymbros": {
+      "get": {
+        "summary": "Get nearby gym buddies",
+        "description": "Returns a list of potential gym buddies near the specified location",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "example": 23.8103
+            },
+            "description": "Latitude of the user's location"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "example": 90.4125
+            },
+            "description": "Longitude of the user's location"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/GymBro"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Latitude and longitude are required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Marathon": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Dhaka City Marathon 2025"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-03-15"
+          },
+          "location": {
+            "type": "string",
+            "example": "Dhaka University Campus"
+          },
+          "distance": {
+            "type": "string",
+            "example": "10km"
+          },
+          "coordinates": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number",
+                "format": "float",
+                "example": 23.8103
+              },
+              "lon": {
+                "type": "number",
+                "format": "float",
+                "example": 90.4125
+              }
+            }
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Rahim Ali"
+                },
+                "time": {
+                  "type": "string",
+                  "example": "45:30"
+                },
+                "rank": {
+                  "type": "integer",
+                  "example": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "Gym": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Power House Gym"
+          },
+          "location": {
+            "type": "string",
+            "example": "Dhanmondi, Road 27"
+          },
+          "rating": {
+            "type": "number",
+            "format": "float",
+            "example": 4.5
+          },
+          "monthlyFee": {
+            "type": "integer",
+            "example": 3000
+          },
+          "facilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["Cardio", "Weights", "Yoga"]
+          },
+          "coordinates": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number",
+                "format": "float",
+                "example": 23.8103
+              },
+              "lon": {
+                "type": "number",
+                "format": "float",
+                "example": 90.4125
+              }
+            }
+          },
+          "openingHours": {
+            "type": "string",
+            "example": "6:00 AM - 10:00 PM"
+          }
+        }
+      },
+      "GymBro": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Shahriar Rahman"
+          },
+          "age": {
+            "type": "integer",
+            "example": 24
+          },
+          "experience": {
+            "type": "string",
+            "example": "3 years"
+          },
+          "specialties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["Weight Training", "Nutrition"]
+          },
+          "availability": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["Morning", "Evening"]
+          },
+          "coordinates": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number",
+                "format": "float",
+                "example": 23.8103
+              },
+              "lon": {
+                "type": "number",
+                "format": "float",
+                "example": 90.4125
+              }
+            }
+          },
+          "bio": {
+            "type": "string",
+            "example": "Passionate about fitness and helping others achieve their goals"
+          },
+          "preferredGym": {
+            "type": "string",
+            "example": "Power House Gym"
+          }
+        }
+      }
+    }
+  }
+}
