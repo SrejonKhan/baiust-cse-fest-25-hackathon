@@ -19,7 +19,16 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Swagger UI
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs", swaggerUi.serve);
+app.get(
+  "/api-docs",
+  swaggerUi.setup(swaggerDocument, {
+    explorer: true,
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "CSE Fest 2025 API Documentation",
+    customfavIcon: "/favicon.ico",
+  })
+);
 
 // Helper function to generate random coordinates in Bangladesh
 function generateBangladeshCoordinates() {
