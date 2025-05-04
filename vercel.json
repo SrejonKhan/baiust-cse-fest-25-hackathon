@@ -8,24 +8,12 @@
   ],
   "routes": [
     {
-      "src": "/api-docs/swagger-ui.css",
-      "dest": "server.js"
-    },
-    {
-      "src": "/api-docs/swagger-ui-bundle.js",
-      "dest": "server.js"
-    },
-    {
-      "src": "/api-docs/swagger-ui-standalone-preset.js",
-      "dest": "server.js"
-    },
-    {
-      "src": "/api-docs/favicon-32x32.png",
-      "dest": "server.js"
-    },
-    {
       "src": "/api-docs/(.*)",
-      "dest": "server.js"
+      "dest": "server.js",
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/javascript"
+      }
     },
     {
       "src": "/api-docs",

@@ -3,6 +3,7 @@ const cors = require("cors");
 const { faker } = require("@faker-js/faker");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
+const path = require("path");
 const app = express();
 
 // CORS configuration
@@ -18,10 +19,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Serve Swagger UI assets
+const swaggerUiAssetPath = path.join(__dirname, "node_modules", "swagger-ui-dist");
+app.use("/api-docs", express.static(swaggerUiAssetPath));
+
 // Swagger UI setup
-app.use(
+app.use("/api-docs", swaggerUi.serve);
+app.get(
   "/api-docs",
-  swaggerUi.serve,
   swaggerUi.setup(swaggerDocument, {
     explorer: true,
     customCss: ".swagger-ui .topbar { display: none }",
@@ -44,253 +49,121 @@ app.use(
   })
 );
 
-// Helper function to generate random coordinates in Bangladesh
-function generateBangladeshCoordinates() {
-  // Bangladesh coordinates range
-  const lat = faker.number.float({ min: 20.7433, max: 26.634, multipleOf: 0.0001 });
-  const lon = faker.number.float({ min: 88.0283, max: 92.6737, multipleOf: 0.0001 });
-  return { lat, lon };
-}
+// Fixed coordinates for consistent data
+const FIXED_COORDINATES = [
+  { lat: 23.8103, lon: 90.4125 }, // Dhaka University
+  { lat: 23.7937, lon: 90.4066 }, // Dhanmondi
+  { lat: 23.7467, lon: 90.3717 }, // Mirpur
+  { lat: 23.8159, lon: 90.4255 }, // Shahbagh
+  { lat: 23.75, lon: 90.3667 }, // Uttara
+];
 
-// Helper function to generate random time in HH:MM format
-function generateRandomTime() {
-  const hours = faker.number.int({ min: 0, max: 23 }).toString().padStart(2, "0");
-  const minutes = faker.number.int({ min: 0, max: 59 }).toString().padStart(2, "0");
-  return `${hours}:${minutes}`;
-}
-
-// Generate mock marathons
-const generateMockMarathons = () => {
+// Generate fixed mock data
+const generateFixedMockData = () => {
   const marathons = [];
-  const cities = [
-    "Dhaka",
-    "Chittagong",
-    "Sylhet",
-    "Rajshahi",
-    "Khulna",
-    "Barishal",
-    "Rangpur",
-    "Mymensingh",
-    "Comilla",
-    "Narayanganj",
-    "Gazipur",
-    "Cox's Bazar",
-  ];
-  const marathonTypes = ["City", "Coastal", "Hill", "Heritage", "Charity", "Corporate"];
-  const distances = [5, 10, 21, 42]; // 5km, 10km, Half Marathon, Full Marathon
+  const cities = ["Dhaka", "Chittagong", "Sylhet", "Rajshahi", "Khulna"];
+  const marathonTypes = ["City", "Coastal", "Hill", "Heritage", "Charity"];
+  const distances = [5, 10, 21, 42];
 
-  for (let i = 0; i < 20; i++) {
-    // Increased from 5 to 20 marathons
-    const city = faker.helpers.arrayElement(cities);
-    const marathonType = faker.helpers.arrayElement(marathonTypes);
-    const { lat, lon } = generateBangladeshCoordinates();
-    const participants = [];
+  FIXED_COORDINATES.forEach((coords, index) => {
+    const city = cities[index % cities.length];
+    const marathonType = marathonTypes[index % marathonTypes.length];
+    const distance = distances[index % distances.length];
 
-    // Generate 10-30 participants
-    const numParticipants = faker.number.int({ min: 10, max: 30 });
-    for (let j = 0; j < numParticipants; j++) {
-      participants.push({
-        name: faker.person.fullName(),
-        time: generateRandomTime(),
-        rank: j + 1,
-        age: faker.number.int({ min: 18, max: 65 }),
-        gender: faker.helpers.arrayElement(["Male", "Female", "Other"]),
-        category: faker.helpers.arrayElement(["Professional", "Amateur", "Beginner"]),
-        nationality: faker.helpers.arrayElement(["Bangladesh", "India", "Nepal", "Sri Lanka", "International"]),
-      });
-    }
-
-    const distance = faker.helpers.arrayElement(distances);
     marathons.push({
-      id: i + 1,
-      name: `${city} ${marathonType} Marathon ${faker.date.future().getFullYear()}`,
-      date: faker.date.future().toISOString().split("T")[0],
+      id: index + 1,
+      name: `${city} ${marathonType} Marathon 2025`,
+      date: "2025-03-15",
       location: `${city} ${faker.location.streetAddress()}`,
       distance: `${distance}km`,
-      coordinates: { lat, lon },
-      participants,
-      registrationFee: faker.number.int({ min: 500, max: 2000 }),
-      prizeMoney: faker.number.int({ min: 10000, max: 100000 }),
-      registrationDeadline: faker.date.future().toISOString().split("T")[0],
+      coordinates: coords,
+      participants: Array(5)
+        .fill()
+        .map((_, i) => ({
+          name: faker.person.fullName(),
+          time: `${45 + i}:${30 + i}`,
+          rank: i + 1,
+          age: 20 + i,
+          gender: ["Male", "Female"][i % 2],
+          category: ["Professional", "Amateur", "Beginner"][i % 3],
+          nationality: "Bangladesh",
+        })),
+      registrationFee: 1000 + index * 100,
+      prizeMoney: 50000 + index * 5000,
+      registrationDeadline: "2025-03-01",
       categories: ["Professional", "Amateur", "Beginner"],
       facilities: ["Water Stations", "Medical Support", "Timing Chip", "Medal", "T-Shirt", "Refreshments"],
       route: {
         startPoint: faker.location.streetAddress(),
         endPoint: faker.location.streetAddress(),
-        checkpoints: Array(faker.number.int({ min: 3, max: 8 }))
-          .fill()
-          .map(() => faker.location.streetAddress()),
+        checkpoints: ["Checkpoint 1", "Checkpoint 2", "Checkpoint 3"],
       },
     });
-  }
+  });
+
   return marathons;
 };
 
-// Generate mock gyms
-const generateMockGyms = () => {
-  const gyms = [];
-  const areas = [
-    "Dhanmondi",
-    "Gulshan",
-    "Mirpur",
-    "Uttara",
-    "Banani",
-    "Mohammadpur",
-    "Lalmatia",
-    "Bashundhara",
-    "Wari",
-    "Motijheel",
-    "Farmgate",
-    "Tejgaon",
-  ];
-  const facilities = [
-    "Cardio",
-    "Weights",
-    "Yoga",
-    "Swimming Pool",
-    "Sauna",
-    "Personal Training",
-    "CrossFit",
-    "Boxing",
-    "Zumba",
-    "Martial Arts",
-    "Steam Room",
-    "Jacuzzi",
-    "Basketball Court",
-    "Tennis Court",
-    "Squash Court",
-    "Indoor Track",
-    "Nutrition Consultation",
-    "Massage Therapy",
-    "Physical Therapy",
-  ];
-  const membershipTypes = ["Basic", "Premium", "VIP", "Family", "Student", "Corporate"];
-
-  for (let i = 0; i < 30; i++) {
-    // Increased from 10 to 30 gyms
-    const area = faker.helpers.arrayElement(areas);
-    const { lat, lon } = generateBangladeshCoordinates();
-    const numFacilities = faker.number.int({ min: 5, max: 10 });
-
-    gyms.push({
-      id: i + 1,
-      name: faker.company.name(),
-      location: `${area}, ${faker.location.streetAddress()}`,
-      rating: faker.number.float({ min: 3.5, max: 5.0, multipleOf: 0.1 }),
-      monthlyFee: faker.number.int({ min: 2000, max: 15000 }),
-      facilities: faker.helpers.arrayElements(facilities, numFacilities),
-      coordinates: { lat, lon },
-      openingHours: `${faker.number.int({ min: 6, max: 8 })}:00 AM - ${faker.number.int({ min: 8, max: 10 })}:00 PM`,
-      membershipTypes: faker.helpers.arrayElements(membershipTypes, faker.number.int({ min: 2, max: 4 })),
-      trainers: Array(faker.number.int({ min: 3, max: 8 }))
-        .fill()
-        .map(() => ({
-          name: faker.person.fullName(),
-          specialty: faker.helpers.arrayElement(facilities),
-          experience: `${faker.number.int({ min: 1, max: 15 })} years`,
-        })),
-      amenities: ["Parking", "Locker Room", "Shower Facilities", "Towel Service", "WiFi", "Cafe", "Pro Shop"],
-      socialMedia: {
-        facebook: faker.internet.url(),
-        instagram: faker.internet.url(),
-        website: faker.internet.url(),
-      },
-      reviews: Array(faker.number.int({ min: 5, max: 15 }))
-        .fill()
-        .map(() => ({
-          rating: faker.number.float({ min: 1, max: 5, multipleOf: 0.1 }),
-          comment: faker.lorem.sentence(),
-          date: faker.date.past().toISOString().split("T")[0],
-        })),
-    });
-  }
-  return gyms;
-};
-
-// Generate mock gymbros
-const generateMockGymBros = () => {
-  const gymbros = [];
-  const specialties = [
-    "Weight Training",
-    "Nutrition",
-    "Yoga",
-    "CrossFit",
-    "Bodybuilding",
-    "Cardio",
-    "Boxing",
-    "Martial Arts",
-    "Powerlifting",
-    "Olympic Lifting",
-    "Calisthenics",
-    "HIIT",
-    "Pilates",
-    "Swimming",
-    "Cycling",
-    "Running",
-  ];
-  const availability = ["Morning", "Evening", "Night", "Weekends", "Weekdays"];
-  const fitnessGoals = [
-    "Weight Loss",
-    "Muscle Gain",
-    "Endurance",
-    "Strength",
-    "Flexibility",
-    "General Fitness",
-    "Sports Specific",
-    "Rehabilitation",
-  ];
-  const experienceLevels = ["Beginner", "Intermediate", "Advanced", "Professional"];
-
-  for (let i = 0; i < 50; i++) {
-    // Increased from 15 to 50 gymbros
-    const { lat, lon } = generateBangladeshCoordinates();
-    const numSpecialties = faker.number.int({ min: 2, max: 4 });
-    const numAvailability = faker.number.int({ min: 2, max: 4 });
-
-    gymbros.push({
-      id: i + 1,
+// Generate fixed mock data once
+const mockMarathons = generateFixedMockData();
+const mockGyms = generateFixedMockData().map((marathon) => ({
+  id: marathon.id,
+  name: `Power House Gym ${marathon.id}`,
+  location: marathon.location,
+  rating: 4.0 + marathon.id * 0.1,
+  monthlyFee: 2000 + marathon.id * 500,
+  facilities: ["Cardio", "Weights", "Yoga", "Personal Training"],
+  coordinates: marathon.coordinates,
+  openingHours: "6:00 AM - 10:00 PM",
+  membershipTypes: ["Basic", "Premium", "Student"],
+  trainers: Array(3)
+    .fill()
+    .map((_, i) => ({
       name: faker.person.fullName(),
-      age: faker.number.int({ min: 18, max: 45 }),
-      experience: `${faker.number.int({ min: 1, max: 15 })} years`,
-      specialties: faker.helpers.arrayElements(specialties, numSpecialties),
-      availability: faker.helpers.arrayElements(availability, numAvailability),
-      coordinates: { lat, lon },
-      bio: faker.lorem.paragraph(),
-      preferredGym: faker.company.name(),
-      fitnessGoals: faker.helpers.arrayElements(fitnessGoals, faker.number.int({ min: 1, max: 3 })),
-      experienceLevel: faker.helpers.arrayElement(experienceLevels),
-      achievements: Array(faker.number.int({ min: 1, max: 5 }))
-        .fill()
-        .map(() => ({
-          title: faker.lorem.words(3),
-          date: faker.date.past().toISOString().split("T")[0],
-          description: faker.lorem.sentence(),
-        })),
-      socialMedia: {
-        instagram: faker.internet.url(),
-        facebook: faker.internet.url(),
-        linkedin: faker.internet.url(),
-      },
-      languages: faker.helpers.arrayElements(
-        ["Bengali", "English", "Hindi", "Arabic"],
-        faker.number.int({ min: 1, max: 3 })
-      ),
-      certifications: Array(faker.number.int({ min: 1, max: 4 }))
-        .fill()
-        .map(() => ({
-          name: faker.lorem.words(3),
-          issuer: faker.company.name(),
-          year: faker.number.int({ min: 2015, max: 2024 }),
-        })),
-    });
-  }
-  return gymbros;
-};
+      specialty: ["Weight Training", "Cardio", "Yoga"][i],
+      experience: `${i + 2} years`,
+    })),
+  amenities: ["Parking", "Locker Room", "Shower Facilities", "WiFi"],
+  socialMedia: {
+    facebook: "https://facebook.com/powerhousegym",
+    instagram: "https://instagram.com/powerhousegym",
+    website: "https://powerhousegym.com",
+  },
+}));
 
-// Generate mock data
-const mockMarathons = generateMockMarathons();
-const mockGyms = generateMockGyms();
-const mockGymBros = generateMockGymBros();
+const mockGymBros = generateFixedMockData().map((marathon) => ({
+  id: marathon.id,
+  name: faker.person.fullName(),
+  age: 20 + marathon.id,
+  experience: `${marathon.id} years`,
+  specialties: ["Weight Training", "Nutrition"],
+  availability: ["Morning", "Evening"],
+  coordinates: marathon.coordinates,
+  bio: "Passionate about fitness and helping others achieve their goals",
+  preferredGym: `Power House Gym ${marathon.id}`,
+  fitnessGoals: ["Muscle Gain", "Strength"],
+  experienceLevel: ["Beginner", "Intermediate", "Advanced"][marathon.id % 3],
+  achievements: [
+    {
+      title: "Regional Powerlifting Champion",
+      date: "2023-12-15",
+      description: "Won first place in the regional powerlifting competition",
+    },
+  ],
+  socialMedia: {
+    instagram: "https://instagram.com/gymbro",
+    facebook: "https://facebook.com/gymbro",
+    linkedin: "https://linkedin.com/in/gymbro",
+  },
+  languages: ["Bengali", "English"],
+  certifications: [
+    {
+      name: "Advanced Personal Training",
+      issuer: "Fitness Academy",
+      year: 2023,
+    },
+  ],
+}));
 
 // Helper function to calculate distance between two points
 function calculateDistance(lat1, lon1, lat2, lon2) {
