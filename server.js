@@ -24,8 +24,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Helper function to generate random coordinates in Bangladesh
 function generateBangladeshCoordinates() {
   // Bangladesh coordinates range
-  const lat = faker.number.float({ min: 20.7433, max: 26.634, precision: 0.0001 });
-  const lon = faker.number.float({ min: 88.0283, max: 92.6737, precision: 0.0001 });
+  const lat = faker.number.float({ min: 20.7433, max: 26.634, multipleOf: 0.0001 });
+  const lon = faker.number.float({ min: 88.0283, max: 92.6737, multipleOf: 0.0001 });
   return { lat, lon };
 }
 
@@ -153,7 +153,7 @@ const generateMockGyms = () => {
       id: i + 1,
       name: faker.company.name(),
       location: `${area}, ${faker.location.streetAddress()}`,
-      rating: faker.number.float({ min: 3.5, max: 5.0, precision: 0.1 }),
+      rating: faker.number.float({ min: 3.5, max: 5.0, multipleOf: 0.1 }),
       monthlyFee: faker.number.int({ min: 2000, max: 15000 }),
       facilities: faker.helpers.arrayElements(facilities, numFacilities),
       coordinates: { lat, lon },
@@ -175,7 +175,7 @@ const generateMockGyms = () => {
       reviews: Array(faker.number.int({ min: 5, max: 15 }))
         .fill()
         .map(() => ({
-          rating: faker.number.float({ min: 1, max: 5, precision: 0.1 }),
+          rating: faker.number.float({ min: 1, max: 5, multipleOf: 0.1 }),
           comment: faker.lorem.sentence(),
           date: faker.date.past().toISOString().split("T")[0],
         })),
@@ -326,6 +326,29 @@ app.get("/api/v1/gymbros", (req, res) => {
   res.json({
     success: true,
     data: nearbyGymBros,
+  });
+});
+
+// Root endpoint
+app.get("/", (req, res) => {
+  const greetings = [
+    "Hi! I'm Srejon Khan, core organizer of CSE Fest Hackathon! 👨‍💻",
+    "Hey there! Srejon Khan here, ready to make this hackathon amazing! 🚀",
+    "Hello! Srejon Khan at your service! Let's build something incredible! 💡",
+    "Greetings! Srejon Khan here, your hackathon guide! 🌟",
+    "Welcome! Srejon Khan here, let's make this hackathon unforgettable! 🎯",
+    "Hey! Srejon Khan here, turning innovative ideas into reality! ⚡",
+    "Hi there! Srejon Khan here, making hackathons accessible for everyone! 🎉",
+    "Hello! Srejon Khan here, your partner in innovation! 💻",
+    "Hey! Srejon Khan here, let's code the future together! 🖥️",
+    "Greetings! Srejon Khan here, your hackathon motivation buddy! ⭐",
+  ];
+
+  const randomGreeting = faker.helpers.arrayElement(greetings);
+  res.json({
+    success: true,
+    message: randomGreeting,
+    timestamp: new Date().toISOString(),
   });
 });
 
