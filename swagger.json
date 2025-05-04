@@ -11,8 +11,12 @@
   },
   "servers": [
     {
-      "url": "https://csefest.srejon.com/api/v1",
+      "url": "https://csefest.srejon.com",
       "description": "Production server"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server"
     }
   ],
   "paths": {
