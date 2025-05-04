@@ -8,11 +8,31 @@
   ],
   "routes": [
     {
+      "src": "/api-docs/swagger-ui.css",
+      "dest": "server.js"
+    },
+    {
+      "src": "/api-docs/swagger-ui-bundle.js",
+      "dest": "server.js"
+    },
+    {
+      "src": "/api-docs/swagger-ui-standalone-preset.js",
+      "dest": "server.js"
+    },
+    {
+      "src": "/api-docs/favicon-32x32.png",
+      "dest": "server.js"
+    },
+    {
       "src": "/api-docs/(.*)",
       "dest": "server.js"
     },
     {
       "src": "/api-docs",
+      "dest": "server.js"
+    },
+    {
+      "src": "/api/v1/(.*)",
       "dest": "server.js"
     },
     {

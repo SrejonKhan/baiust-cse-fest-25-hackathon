@@ -18,15 +18,29 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Swagger UI
-app.use("/api-docs", swaggerUi.serve);
-app.get(
+// Swagger UI setup
+app.use(
   "/api-docs",
+  swaggerUi.serve,
   swaggerUi.setup(swaggerDocument, {
     explorer: true,
     customCss: ".swagger-ui .topbar { display: none }",
     customSiteTitle: "CSE Fest 2025 API Documentation",
     customfavIcon: "/favicon.ico",
+    swaggerOptions: {
+      persistAuthorization: true,
+      docExpansion: "list",
+      filter: true,
+      showExtensions: true,
+      showCommonExtensions: true,
+      defaultModelsExpandDepth: 3,
+      defaultModelExpandDepth: 3,
+      displayRequestDuration: true,
+      syntaxHighlight: {
+        activate: true,
+        theme: "monokai",
+      },
+    },
   })
 );
 
